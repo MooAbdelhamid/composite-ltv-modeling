@@ -26,8 +26,3 @@ Rather than predicting a single LTV figure, the model decomposes "Yearly Income"
 * **Retention > Upsell:** While cross-sells are high-value, 12-month retention of the core subscription remains the primary driver of total portfolio value.
 
 
-
-## 🚀 How to Use
-1. **Clone the repo:** `git clone https://github.com/your-username/repo-name.git`
-2. **Install dependencies:** `pip install -r requirements.txt`
-3. **Run the analysis:** Open `Getsafe_LTV_Analysis.ipynb`
