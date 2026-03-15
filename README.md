@@ -1,28 +1,49 @@
-# 12-Month Customer LTV Prediction: InsurTech Case Study
+# 12-Month Customer LTV Prediction
 
-## Project Overview
-This project aims to predict the 12-Month Loan-to-Value (LTV) for new insurance customers data available at the moment of signup. 
+End-to-end machine learning pipeline predicting 12-month revenue at signup
+for a subscription-based insurance product (~91k customers).
 
-The primary challenge was the non-linear nature of customer tenure and the sparse, high-value nature of cross-sell events. I developed a 3-Stage Composite Model that outperforms standard regression by separating churn risk from expansion potential.
+## The problem
+Standard regression fails on insurance LTV because revenue is driven by two
+separate events: whether a customer stays, and whether they buy additional
+policies. A single model can't capture both cleanly.
 
-## Key Results
-* **Mean Absolute Error (MAE):** 35.49
-* **Root Mean Squared Error (RMSE):** 103.50
-* **Approach:** Transitioned from simple Regression to an XGBoost Classifier Model to better handle the skewed 12-month tenure data.
+## Solution: 3-stage composite model
+Rather than predicting LTV directly, the pipeline decomposes it:
 
+1. **Tenure classifier** — probability the customer stays 12 months
+2. **Cross-sell classifier** — probability they purchase an additional policy
+3. **Cross-sell valuator** — expected value of that policy if purchased
 
+**Formula:** `LTV = (Monthly Commission × Predicted Tenure) + (P_crosssell × Value_crosssell)`
 
-## The Composite Model Architecture
-Rather than predicting a single LTV figure, the model decomposes "Yearly Income" into its core components:
-1.  **Tenure Classifier:** Predicts the probability of a user staying 12 months and number of tenure months.
-2.  **Cross-Sell:** A binary classifier to predict the probability of an additional policy purchase.
-3.  **Cross-Sell Valuator:** A regressor to estimate the value of that cross-sell if it occurs.
+## Results
+| Model | MAE | RMSE |
+|---|---|---|
+| Baseline (mean prediction) | 42.0 | — |
+| Linear Regression | ~40 | — |
+| Composite XGBoost | **35.49** | 103.50 |
 
-**Final Formula:** $LTV_{12m} = (Monthly\ Commission \times \text{Pred\_Tenure}) + (\hat{P}_{xs} \times \hat{V}_{xs})$
+16% reduction in MAE over baseline.
 
-## Top Business Insights
-* **The "Product C" Gateway:** Customers starting with Product C show the highest propensity for cross-selling and long-term retention.
-* **Platform Friction:** Users on "Other" Operating Systems showed a significantly higher churn rate compared to iOS/Android, suggesting technical or UX barriers.
-* **Retention > Upsell:** While cross-sells are high-value, 12-month retention of the core subscription remains the primary driver of total portfolio value.
+## Key business insights
+- Customers starting with **Product C** show the highest cross-sell propensity
+- Users on non-standard OS show significantly higher churn — likely UX friction
+- Retention drives more total portfolio value than upsell events
 
+## Tech stack
+Python · Pandas · scikit-learn · XGBoost · Jupyter
 
+## How to run
+```bash
+pip install -r requirements.txt
+jupyter notebook LTV_Model.ipynb
+```
+
+## Project structure
+```
+composite-ltv-modeling/
+├── LTV_Model.ipynb      # Main modeling notebook
+├── requirements.txt
+└── README.md
+```
